@@ -1,0 +1,23 @@
+{
+  "name": "smart-docx",
+  "version": "0.0.1",
+  "description": "MongoDB to .docx Converter",
+  "main": "app.js",
+  "author": {
+    "name": "Stephen Brower"
+  },
+  "scripts": {
+    "build": "tsc --build",
+    "clean": "tsc --build --clean",
+    "test": "mocha -r ts-node/register tests/tests.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^8.0.14",
+    "typescript": "^3.2.2"
+  },
+  "dependencies": {
+    "docx": "^5.1.1",
+    "eslint-plugin-mocha": "^7.0.1",
+    "mocha": "^7.2.0"
+  }
+}
