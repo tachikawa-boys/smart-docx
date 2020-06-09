@@ -27,10 +27,14 @@ async function cleanupTmp(expectedFile: string) {
     });
 }
 
+
+
 describe("Basic Unit Tests", () => {
     it("Create docx", async () => {
 
         const randFileName = randomstring.generate(7);
+        const randString = randomstring.generate();
+
         const temp = tmpdir;
         const doc = new DocWriter("Test", "TestDesc", randFileName, "Test");
         doc.registerHandle(temp);
@@ -43,18 +47,20 @@ describe("Basic Unit Tests", () => {
     });
 
     it("Simple Write no Verify", async () => {
+        const randFileName = randomstring.generate(7);
+        const randString = randomstring.generate();
         const temp = tmpdir;
-        const doc = new DocWriter("Test", "TestDesc", "TestFile", "Test");
+        const doc = new DocWriter("Test", "TestDesc", randFileName, "Test");
         doc.registerHandle(temp);
 
-        const paragraph1 = new docx.Paragraph(randomstring.generate());
+        const paragraph1 = new docx.Paragraph(randString);
         const paragraphs: docx.Paragraph[] = new Array(paragraph1);
 
         doc.writeSection(paragraphs);
         await doc.closeHandle();
 
         //const expectedFile = temp + '\\TestFile.docx';
-        const expectedFile = temp + '\\' + randomstring.generate(7) + '.docx';
+        const expectedFile = temp + '\\' + randFileName + '.docx';
         await cleanupTmp(expectedFile);
     });
 });
@@ -62,33 +68,38 @@ describe("Basic Unit Tests", () => {
 describe("Read/Write Unit Tests", () => {
 
     it("Simple Write Verify", async () => {
+        const randFileName = randomstring.generate(7);
+        const randString = randomstring.generate();
         const temp = tmpdir;
-        const doc = new DocWriter("Test", "TestDesc", "TestFile", "Test");
+        const doc = new DocWriter("Test", "TestDesc", randFileName, "Test");
         doc.registerHandle(temp);
 
-        const paragraph1 = new docx.Paragraph(randomstring.generate());
+        const paragraph1 = new docx.Paragraph(randString);
         const paragraphs: docx.Paragraph[] = new Array(paragraph1);
 
         doc.writeSection(paragraphs);
         await doc.closeHandle();
 
         //const expectedFile = temp + '\\TestFile.docx';
-        const expectedFile = temp + '\\' + randomstring.generate(7) + '.docx';
+        const expectedFile = temp + '\\' + randFileName + '.docx';
         expect(file(expectedFile)).to.exist;
         const docR = new DocReader(expectedFile);
 
         docR.openDoc();
-        expect(docR.searchForBodyText(randomstring.generate())).to.be.true;
+        expect(docR.searchForBodyText(randString)).to.be.true;
         await docR.closeDoc();
         await cleanupTmp(expectedFile);
     });
 
     it("Simple Write Verify (Fail)", async () => {
+        const randFileName = randomstring.generate(7);
+        const randString = randomstring.generate();
+        const randStringFail = randomstring.generate(31);
         const temp = tmpdir;
-        const doc = new DocWriter("Test", "TestDesc", "TestFile", "Test");
+        const doc = new DocWriter("Test", "TestDesc", randFileName, "Test");
         doc.registerHandle(temp);
 
-        const paragraph1 = new docx.Paragraph(randomstring.generate());
+        const paragraph1 = new docx.Paragraph(randString);
         const paragraphs: docx.Paragraph[] = new Array(paragraph1);
 
         doc.writeSection(paragraphs);
@@ -96,12 +107,12 @@ describe("Read/Write Unit Tests", () => {
 
 
         //const expectedFile = temp + '\\TestFile.docx';
-        const expectedFile = temp + '\\' + randomstring.generate(7) + '.docx';
+        const expectedFile = temp + '\\' + randFileName + '.docx';
         expect(file(expectedFile)).to.exist;
         const docR = new DocReader(expectedFile);
 
         docR.openDoc();
-        expect(docR.searchForBodyText(randomstring.generate())).to.be.false;
+        expect(docR.searchForBodyText(randStringFail)).to.be.false;
         await docR.closeDoc();
         await cleanupTmp(expectedFile);
     });
