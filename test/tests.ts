@@ -7,6 +7,7 @@ import { unlink } from "fs";
 import { tmpdir } from 'tmp';
 import { DocReader } from "../ts-src/DocReader";
 import { DocWriter } from "../ts-src/DocWriter";
+import randomstring = require('randomstring');
 
 const expect = chai.expect;
 const file = chaiFiles.file;
@@ -29,12 +30,14 @@ async function cleanupTmp(expectedFile: string) {
 describe("Basic Unit Tests", () => {
     it("Create docx", async () => {
 
+        const randFileName = randomstring.generate(7);
         const temp = tmpdir;
-        const doc = new DocWriter("Test", "TestDesc", "TestFile", "Test");
+        const doc = new DocWriter("Test", "TestDesc", randFileName, "Test");
         doc.registerHandle(temp);
         await doc.closeHandle();
 
-        const expectedFile = temp + '\\TestFile.docx';
+        //const expectedFile = temp + '\\TestFile.docx';
+        const expectedFile = temp + '\\' + randFileName + '.docx';
         expect(file(expectedFile)).to.exist;
         await cleanupTmp(expectedFile);
     });
@@ -44,13 +47,14 @@ describe("Basic Unit Tests", () => {
         const doc = new DocWriter("Test", "TestDesc", "TestFile", "Test");
         doc.registerHandle(temp);
 
-        const paragraph1 = new docx.Paragraph("HelloWorld!");
+        const paragraph1 = new docx.Paragraph(randomstring.generate());
         const paragraphs: docx.Paragraph[] = new Array(paragraph1);
 
         doc.writeSection(paragraphs);
         await doc.closeHandle();
 
-        const expectedFile = temp + '\\TestFile.docx';
+        //const expectedFile = temp + '\\TestFile.docx';
+        const expectedFile = temp + '\\' + randomstring.generate(7) + '.docx';
         await cleanupTmp(expectedFile);
     });
 });
@@ -62,18 +66,19 @@ describe("Read/Write Unit Tests", () => {
         const doc = new DocWriter("Test", "TestDesc", "TestFile", "Test");
         doc.registerHandle(temp);
 
-        const paragraph1 = new docx.Paragraph("HelloWorld!");
+        const paragraph1 = new docx.Paragraph(randomstring.generate());
         const paragraphs: docx.Paragraph[] = new Array(paragraph1);
 
         doc.writeSection(paragraphs);
         await doc.closeHandle();
 
-        const expectedFile = temp + '\\TestFile.docx';
+        //const expectedFile = temp + '\\TestFile.docx';
+        const expectedFile = temp + '\\' + randomstring.generate(7) + '.docx';
         expect(file(expectedFile)).to.exist;
         const docR = new DocReader(expectedFile);
 
         docR.openDoc();
-        expect(docR.searchForBodyText("HelloWorld!")).to.be.true;
+        expect(docR.searchForBodyText(randomstring.generate())).to.be.true;
         await docR.closeDoc();
         await cleanupTmp(expectedFile);
     });
@@ -83,19 +88,20 @@ describe("Read/Write Unit Tests", () => {
         const doc = new DocWriter("Test", "TestDesc", "TestFile", "Test");
         doc.registerHandle(temp);
 
-        const paragraph1 = new docx.Paragraph("Hello World!");
+        const paragraph1 = new docx.Paragraph(randomstring.generate());
         const paragraphs: docx.Paragraph[] = new Array(paragraph1);
 
         doc.writeSection(paragraphs);
         await doc.closeHandle();
 
 
-        const expectedFile = temp + '\\TestFile.docx';
+        //const expectedFile = temp + '\\TestFile.docx';
+        const expectedFile = temp + '\\' + randomstring.generate(7) + '.docx';
         expect(file(expectedFile)).to.exist;
         const docR = new DocReader(expectedFile);
 
         docR.openDoc();
-        expect(docR.searchForBodyText("HelloWorld!")).to.be.false;
+        expect(docR.searchForBodyText(randomstring.generate())).to.be.false;
         await docR.closeDoc();
         await cleanupTmp(expectedFile);
     });
