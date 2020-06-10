@@ -43,11 +43,15 @@ export class DocWriter {
     /** 
      * Applies a payload of paragraphs to a new section. 
      */
-    writeSection(paragraphs: docx.Paragraph[]): void {
+    writeSection(paragraphs: docx.Paragraph[], header: docx.Header, footer: docx.Footer): void {
         paragraphs.push(new docx.Paragraph({children: [new docx.PageBreak()]}))
 
         this._doc.addSection({
-            properties: {/*Can be added as Params.*/ }, children: paragraphs 
+            properties: {/*Can be added as Params.*/ },
+            children: paragraphs,
+            headers: { default: header },
+            footers: { default: footer }
         });
     }
+
 }

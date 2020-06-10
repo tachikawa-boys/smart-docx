@@ -2,6 +2,7 @@ import fs = require('fs');
 import unzip = require('adm-zip');
 import tmp = require('tmp');
 import xml2js = require('xml2js');
+import glob = require('glob');
 
 /**
  * Reader to break open an Open XML Word file to verify values.
@@ -43,6 +44,48 @@ export class DocReader {
             return true;
         };
         return false;
+    }
+
+    /**
+     * Simplest possible method for searching text in headers.
+     * @param text - Any string contained within the XML file.
+     * Since this is super-simple, it may misfire on XML namespacing.
+     */
+    public searchForHeaderText(text: string): boolean {
+        const files = glob.sync(this._tmp + '/word/header?.xml');
+        const retVal = files.some((file) => {
+            const data = fs.readFileSync(file, { encoding: 'utf-8' });
+            xml2js.parseString(data, function (err, res) {
+                if (err) console.log(err);
+                console.log(res);
+            });
+            if (data.includes(text)) {
+                return true;
+            };
+            return false;
+        });
+        return retVal;
+    }
+
+    /**
+ * Simplest possible method for searching text in headers.
+ * @param text - Any string contained within the XML file.
+ * Since this is super-simple, it may misfire on XML namespacing.
+ */
+    public searchForFooterText(text: string): boolean {
+        const files = glob.sync(this._tmp + '/word/footer?.xml');
+        const retVal = files.some((file) => {
+            const data = fs.readFileSync(file, { encoding: 'utf-8' });
+            xml2js.parseString(data, function (err, res) {
+                if (err) console.log(err);
+                console.log(res);
+            });
+            if (data.includes(text)) {
+                return true;
+            };
+            return false;
+        });
+        return retVal;
     }
 
     /**
